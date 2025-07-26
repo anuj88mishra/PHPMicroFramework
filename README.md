@@ -1,5 +1,5 @@
 # PHPMicroFramework
-The low code PHP code genrator for rapid web application development.
+The low code PHP code generator for rapid web application development.
 
 Todo List
 - [x] Tabular List View with search
