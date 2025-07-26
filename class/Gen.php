@@ -1,6 +1,6 @@
 <?php
-include "Conn.php";
-final class Gen {
+include BASE_DIR."class/Conn.php";
+class Gen {
     protected $conn;
     public $sql;
     public $param;
@@ -185,8 +185,8 @@ final class Gen {
         $this->html .= "</div>"; //End tableDiv
         // Pagination
         // echo "limit=$this->limit, offset=$this->offset";
-        $base_url = ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ? 'https' : 'http' ) . '://' .  $_SERVER['HTTP_HOST'];
-        $url = $base_url . parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+        $BASE_DIR = ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ? 'https' : 'http' ) . '://' .  $_SERVER['HTTP_HOST'];
+        $url = $BASE_DIR . parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
         $max_page = Util::C_CEIL((int)$fullCnt,$this->limit)/(int)$this->limit;
         
         if ($fullCnt > $this->limit) {

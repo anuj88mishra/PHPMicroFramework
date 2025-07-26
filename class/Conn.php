@@ -1,6 +1,5 @@
 <?php
-include __DIR__."/../config.php";
-include "Util.php";
+include BASE_DIR."class/Util.php";
 final class Conn {
     private $dbh;
     public function __construct() {

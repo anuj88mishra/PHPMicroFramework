@@ -1,7 +1,7 @@
 
 <?php
 include __DIR__."/../template/header.php";
-include __DIR__."/../class/Gen.php";
+include BASE_DIR."class/Gen.php";
 $gen = new Gen();
 $gen->sql = "INSERT INTO adm.user_1 (usr_cd, usr_name) VALUES (?, ?)";
 $gen->param = "usr_cd~usr_name";
@@ -39,5 +39,4 @@ $gen->fields = [
     ]
 ];
 echo $gen->form();
-include __DIR__."/../template/header.php";
-?>
+include __DIR__."/../template/footer.php";
