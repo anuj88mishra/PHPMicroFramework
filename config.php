@@ -8,3 +8,4 @@ const BASE_DIR = '/var/www/html/ns/'; //Relative path to domain if at root only 
 const SITE_TITLE = "MySite";
 const SITE_DESC = "Glorious site description";
 const DEBUG = true;
+const SECURE = true;

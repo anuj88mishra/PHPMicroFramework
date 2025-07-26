@@ -1,5 +1,18 @@
 <?php 
 include __DIR__."/../config.php";
+date_default_timezone_set("Asia/Kolkata");
+header("Cache-Control: no-cache, must-revalidate");
+header("Expires: -1");
+if (SECURE) {
+    header("X-XSS-Protection: 1; mode=block");
+    header('Access-Control-Allow-Headers: *');
+    header('X-Content-Type-Options: nosniff');
+    header("Access-Control-Allow-Methods: POST, GET");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization");  // Allowed headers
+    header('Access-Control-Allow-Headers: Content-Type');
+    header("Access-Control-Expose-Headers: Content-Disposition");
+    header_remove("X-Powered-By");
+}
 if (DEBUG) {
     error_reporting(E_ALL); ini_set('display_errors', '1');
 }
