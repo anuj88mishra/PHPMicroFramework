@@ -1,8 +1,8 @@
 <?php 
 include __DIR__."/../config.php";
 date_default_timezone_set("Asia/Kolkata");
-header("Cache-Control: no-cache, must-revalidate");
-header("Expires: -1");
+// header("Cache-Control: no-cache, must-revalidate");
+// header("Expires: -1");
 if (SECURE) {
     header("X-XSS-Protection: 1; mode=block");
     header('Access-Control-Allow-Headers: *');
@@ -27,8 +27,8 @@ if (DEBUG) {
     <meta name="description" content="<?php echo "TEST".SITE_DESC;?>" >
     <title><?=SITE_TITLE?></title>
     <link rel="stylesheet" href="https://bulma.io/vendor/fontawesome-free-6.5.2-web/css/all.min.css">
-    <link rel="stylesheet" href="https://bulma.io/assets/css/website.min.css?v=202506271628">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
 </head>
 <body>
+<div class="container">

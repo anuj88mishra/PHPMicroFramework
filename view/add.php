@@ -1,4 +1,3 @@
-
 <?php
 include __DIR__."/../template/header.php";
 include BASE_DIR."class/Gen.php";

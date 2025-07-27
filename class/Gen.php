@@ -1,97 +1,43 @@
 <?php
 include BASE_DIR."class/Conn.php";
-class Gen {
+include BASE_DIR."class/HtmlClass.php";
+class Gen extends HtmlClass{
     protected $conn;
     public $sql;
     public $param;
     public $fields;
-    public $divClass;
-    public $tblClass;
     public $tblId;
     public $html;
     // List specific attributes
     public $limit;
     public $offset;
     public $withSrch;
-    public $searchFormClass;
-    public $searchControlClass;
-    public $searchInputClass;
-    public $searchButtonControlClass;
-    public $searchButtonClass;
-    public $pageControlClass;
-    public $pageListClass;
-    public $pageLinkClass;
-    public $pageEllipsesClass;
-    public $pageCurrentClass;
-    // Add/Update specific attributes
-    public $notifyClass;
-    public $notifyMessage;
-    public $fieldGroupClass;
-    public $fieldControlClass;
-    public $fieldInputClass;
-    public $buttonClass;
     
     public function __construct() {
+        parent::__construct();
         $this->conn = new Conn();
         $this->sql = "";
         $this->param = "";
         $this->fields = [];
-        $this->divClass = "tableDiv";
-        $this->tblClass = "table is-fullwidth";
         $this->tblId = "";
         $this->html = "";
         
         $this->limit = 20;
         $this->offset = 0;
         $this->withSrch = 1;
-        $this->searchFormClass = "field has-addons";
-        $this->searchControlClass = "control is-expanded";
-        $this->searchInputClass = "search input is-primary";
-        $this->searchButtonControlClass = "control";
-        $this->searchButtonClass = "button is-info";
-        $this->pageControlClass = "pagination";
-        $this->pageListClass = "pagination-list";
-        $this->pageLinkClass = "pagination-link";
-        $this->pageEllipsesClass = "pagination-ellipses";
-        $this->pageCurrentClass = "pagination-link is-current";
-        
-        $this->notifyClass = "";
-        $this->notifyMessage = "";
-        $this->fieldGroupClass = "field";
-        $this->fieldControlClass = "control";
-        $this->fieldInputClass = "input";
-        $this->buttonClass = "button";
     }
     public function __destruct() {
+        parent::__destruct();
         $this->conn = null;
         $this->sql = null;
         $this->param = null;
         $this->fields = null;
-        $this->divClass = null;
-        $this->tblClass = null;
         $this->tblId = null;
         $this->html = null;
         
         $this->limit = null;
         $this->offset = null;
         $this->withSrch = null;
-        $this->searchFormClass = null;
-        $this->searchControlClass = null;
-        $this->searchInputClass = null;
-        $this->searchButtonControlClass = null;
-        $this->searchButtonClass = null;
-        $this->pageControlClass = null;
-        $this->pageListClass = null;
-        $this->pageLinkClass = null;
-        $this->pageEllipsesClass = null;
-        $this->pageCurrentClass = null;
-        
-        $this->notifyClass = null;
-        $this->notifyMessage = null;
-        $this->fieldGroupClass = null;
-        $this->fieldControlClass = null;
-        $this->fieldInputClass = null;
-        $this->buttonClass = null;
     }
     public function preTran() { 
         /* provision for overriding */ 
@@ -214,9 +160,13 @@ class Gen {
         return $this->html;
     }
     public function form() {
-        if (empty($this->sql) || empty($this->param) || empty($this->fields)) {
+        // if (empty($this->sql) || empty($this->param) || empty($this->fields)) {
+        //     return $this->html."Mandatory parameters missing!"; 
+        // }
+        if (empty($this->fields)) {
             return $this->html."Mandatory parameters missing!"; 
         }
+
         // Process submission
         if (isset($_POST['submit'])) {
             $this->preTran();
