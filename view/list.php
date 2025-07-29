@@ -1,5 +1,5 @@
 <?php
-include __DIR__."/../template/header.php";
+include __DIR__."/../template/headerAuth.php";
 include BASE_DIR."class/Gen.php";
 $gen = new Gen();
 $gen->sql = "SELECT * FROM adm.user_1 WHERE 1=1";

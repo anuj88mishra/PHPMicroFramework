@@ -1,5 +1,5 @@
 <?php
-include __DIR__."/../template/header.php";
+include __DIR__."/../template/headerAuth.php";
 include BASE_DIR."class/Gen.php";
 $gen = new Gen();
 if (empty($_GET['code'])) { echo "Key not found! Please contact IT Deptt."; exit(); }

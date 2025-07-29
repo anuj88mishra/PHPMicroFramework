@@ -1,6 +1,5 @@
 <?php
 include BASE_DIR."class/Conn.php";
-include BASE_DIR."class/HtmlClass.php";
 class Gen extends HtmlClass{
     protected $conn;
     public $sql;
@@ -8,10 +7,13 @@ class Gen extends HtmlClass{
     public $fields;
     public $tblId;
     public $html;
-    // List specific attributes
+    /* List specific attributes */
     public $limit;
     public $offset;
     public $withSrch;
+
+    public $formTitle;
+    public $ret;
     
     public function __construct() {
         parent::__construct();
@@ -25,6 +27,8 @@ class Gen extends HtmlClass{
         $this->limit = 20;
         $this->offset = 0;
         $this->withSrch = 1;
+        $this->formTitle = "Add/ Edit";
+        $this->ret = null;
     }
     public function __destruct() {
         parent::__destruct();
@@ -38,6 +42,8 @@ class Gen extends HtmlClass{
         $this->limit = null;
         $this->offset = null;
         $this->withSrch = null;
+        $this->formTitle = null;
+        $this->ret = null;
     }
     public function preTran() { 
         /* provision for overriding */ 
@@ -160,34 +166,45 @@ class Gen extends HtmlClass{
         return $this->html;
     }
     public function form() {
-        // if (empty($this->sql) || empty($this->param) || empty($this->fields)) {
-        //     return $this->html."Mandatory parameters missing!"; 
-        // }
+        /* if (empty($this->sql) || empty($this->param) || empty($this->fields)) {
+        *     return $this->html."Mandatory parameters missing!"; 
+        * } */
         if (empty($this->fields)) {
             return $this->html."Mandatory parameters missing!"; 
         }
 
-        // Process submission
+        /* Process submission */
         if (isset($_POST['submit'])) {
             $this->preTran();
-            $this->param = explode('~', $this->param);
-            foreach ($this->param as $key => $value) {
-                $this->param[$key] = $_POST[$value];
-            }
-            // exit(implode('~',$this->param));
-            $ret = $this->conn->ExecSQL($this->sql, implode('~',$this->param));
-            if ($ret) { 
-                $this->notifyClass = "is-success is-light";
-                $this->notifyMessage = "Add/ Update successful";
-            } else {
-                $this->notifyClass = "is-danger is-light";
-                $this->notifyMessage = "Add/ Update failed";
+            if ($this->param) {
+                $this->param = explode('~', $this->param);
+                foreach ($this->param as $key => $value) {
+                    $this->param[$key] = $_POST[$value];
+                }
+                /* exit(implode('~',$this->param)); */
+                if ($this->sql) {
+                    $this->ret = $this->conn->ExecSQL($this->sql, implode('~',$this->param));
+                    if ($this->ret) { 
+                        $this->notifyClass = "notification is-success is-light";
+                        $this->notifyMessage = "Add/ Update successful";
+                    } else {
+                        $this->notifyClass = "notification is-danger is-light";
+                        $this->notifyMessage = "Add/ Update failed";
+                    }
+                }
             }
             $this->preNotify();
-            $this->html .= "<div class='notification $this->notifyClass'><button class='delete'></button>$this->notifyMessage</div>";
+            if ($this->notifyMessage) {
+                $this->html .= "<div class='$this->notifyClass'><button class='delete'></button>$this->notifyMessage</div>";
+            }
             $this->postTran();
         }
-        // Generate Form
+        /* Generate Form */
+        $this->html .= "<div class='$this->cardClass'>";
+        $this->html .= "<div class='$this->cardHeaderClass'>";
+        $this->html .= "<div class='$this->cardHeaderTitleClass'>$this->formTitle</div>";
+        $this->html .= "</div>"; /*End Card Header */
+        $this->html .= "<div class='$this->cardContentClass'>";
         $this->html .= "<form class='".$this->tblClass."' id='".$this->tblId."' method='POST' action='".(isset($this->fields['actions']['submit']['link'])?$this->fields['actions']['submit']['link']:"#")."'>";
         foreach ($this->fields as $key => $value) {
             if ($key == "actions") continue;
@@ -234,7 +251,7 @@ class Gen extends HtmlClass{
                 }
                 $this->html .= "</select>";
             }
-            $this->html .= "</div></div>";
+            $this->html .= "</div></div>"; /* End Control and Group Div */
         }
         if (isset($this->fields['actions'])) {
             $this->html .= "<div class='field is-grouped'>";
@@ -254,6 +271,7 @@ class Gen extends HtmlClass{
             $this->html .= "</div>";
         }
         $this->html .= "</form>";
+        $this->html .= "</div></div>"; /* End Card Content and Card Div */
         return $this->html;
     }
 }

@@ -7,7 +7,8 @@ final class Conn {
             $this->dbh = new PDO("pgsql:host=".DB_HOST.";dbname=".DB_NAME, DB_USER, DB_PASS);
             $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);;
         } catch(PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
+            $_SESSION['FERROR'] = "Connection failed: " . (DEBUG?$e->getMessage():"");
+            die();
         }
     }
     public function __destruct() {
@@ -15,20 +16,19 @@ final class Conn {
     }
     // USE QUESTION MARK ? AS PARAM PLACEHOLDER IN QUERIES FOR MySQL and pgSQL both
     public function SQLFetch($qry, $param=NULL) {
-        if (!$this->dbh) return 0;
-        if (!Util::C_CLEAN_SELECT($qry)) { return 0; }
-        $result = null;
+        if (!$this->dbh) { $_SESSION['FERROR'] = ERR['BADCON']; return 0; }
+        if (!Util::C_CLEAN_SELECT($qry)) { $_SESSION['FERROR'] = ERR['UNCLEANSQL']; return 0; }
         if(!empty($param)) {
             if(!is_array($param)) {
                 if(strpos($param, '~') >= 0) $param = explode('~', $param);
             }
-            if(!is_array($param)) return 0;
+            if(!is_array($param)) { $_SESSION['FERROR'] = ERR['PARAMERR']; return 0; }
             try {
                 $stmt = $this->dbh->prepare($qry);
                 $stmt->execute($param);
                 // print_r($param); print_r($qry);
             } catch(PDOException $e) {
-                echo "Error: " . $e->getMessage();
+                $_SESSION['FERROR'] = ERR['SQLERR'] . (DEBUG?$e->getMessage():"");
                 return 0;
             }
         } else {
@@ -36,7 +36,7 @@ final class Conn {
                 $stmt = $this->dbh->prepare($qry);
                 $stmt->execute();
             } catch(PDOException $e) {
-                echo "Error: " . $e->getMessage();
+                $_SESSION['FERROR'] = ERR['SQLERR'] . (DEBUG?$e->getMessage():"");
                 return 0;
             }
         }
@@ -46,19 +46,18 @@ final class Conn {
         return $row[0];
     }
     public function SQLFetchRow($qry, $param=NULL) {
-        if (!$this->dbh) return 0;
-        if (!Util::C_CLEAN_SELECT($qry)) { return 0; }
-        $result = null;
+        if (!$this->dbh) { $_SESSION['FERROR'] = ERR['BADCON']; return 0; }
+        if (!Util::C_CLEAN_SELECT($qry)) { $_SESSION['FERROR'] = ERR['UNCLEANSQL']; return 0; }
         if(!empty($param)) {
             if(!is_array($param)) {
                 if(strpos($param, '~') >= 0) $param = explode('~', $param);
             }
-            if(!is_array($param)) return 0;
+            if(!is_array($param)) { $_SESSION['FERROR'] = ERR['PARAMERR']; return 0; }
             try {
                 $stmt = $this->dbh->prepare($qry);
                 $stmt->execute($param);
             } catch(PDOException $e) {
-                echo "Error: " . $e->getMessage();
+                $_SESSION['FERROR'] = ERR['SQLERR'] . (DEBUG?$e->getMessage():"");
                 return 0;
             }
         } else {
@@ -66,7 +65,7 @@ final class Conn {
                 $stmt = $this->dbh->prepare($qry);
                 $stmt->execute();
             } catch(PDOException $e) {
-                echo "Error: " . $e->getMessage();
+                $_SESSION['FERROR'] = ERR['SQLERR'] . (DEBUG?$e->getMessage():"");
                 return 0;
             }
         }
@@ -75,48 +74,18 @@ final class Conn {
         return $row;
     }
     public function SQLCursor($qry, $param=NULL) {
-        if (!$this->dbh) return 0;
-        if (!Util::C_CLEAN_SELECT($qry)) { return 0; }
-        $result = null;
+        if (!$this->dbh) { $_SESSION['FERROR'] = ERR['BADCON']; return 0; }
+        if (!Util::C_CLEAN_SELECT($qry)) { $_SESSION['FERROR'] = ERR['UNCLEANSQL']; return 0; }
         if(!empty($param)) {
             if(!is_array($param)) {
                 if(strpos($param, '~') >= 0) $param = explode('~', $param);
             }
-            if(!is_array($param)) return 1;
+            if(!is_array($param)) { $_SESSION['FERROR'] = ERR['PARAMERR']; return 0; }
             try {
                 $stmt = $this->dbh->prepare($qry);
                 $stmt->execute($param);
             } catch(PDOException $e) {
-                echo "Error: " . $e->getMessage();
-                return 2;
-            }
-        } else {
-            try {
-                $stmt = $this->dbh->prepare($qry);
-                $stmt->execute();
-            } catch(PDOException $e) {
-                echo "Error: " . $e->getMessage();
-                return 3;
-            }
-        }
-        $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt->closeCursor();
-        return $row;
-    }
-    public function ExecSQL($qry, $param=NULL) {
-        if (!$this->dbh) return 0;
-        if (!Util::C_CLEAN_UPDATE($qry)) { return 0; }
-        $result = null;
-        if(!empty($param)) {
-            if(!is_array($param)) {
-                if(strpos($param, '~') >= 0) $param = explode('~', $param);
-            }
-            if(!is_array($param)) return 0;
-            try {
-                $stmt = $this->dbh->prepare($qry);
-                $stmt->execute($param);
-            } catch(PDOException $e) {
-                echo "Error: " . $e->getMessage();
+                $_SESSION['FERROR'] = ERR['SQLERR'] . (DEBUG?$e->getMessage():"");
                 return 0;
             }
         } else {
@@ -124,7 +93,35 @@ final class Conn {
                 $stmt = $this->dbh->prepare($qry);
                 $stmt->execute();
             } catch(PDOException $e) {
-                echo "Error: " . $e->getMessage();
+                $_SESSION['FERROR'] = ERR['SQLERR'] . (DEBUG?$e->getMessage():"");
+                return 0;
+            }
+        }
+        $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $row;
+    }
+    public function ExecSQL($qry, $param=NULL) {
+        if (!$this->dbh) { $_SESSION['FERROR'] = ERR['BADCON']; return 0; }
+        if (!Util::C_CLEAN_UPDATE($qry)) { $_SESSION['FERROR'] = ERR['UNCLEANSQL']; return 0; }
+        if(!empty($param)) {
+            if(!is_array($param)) {
+                if(strpos($param, '~') >= 0) $param = explode('~', $param);
+            }
+            if(!is_array($param)) { $_SESSION['FERROR'] = ERR['PARAMERR']; return 0; }
+            try {
+                $stmt = $this->dbh->prepare($qry);
+                $stmt->execute($param);
+            } catch(PDOException $e) {
+                $_SESSION['FERROR'] = ERR['SQLERR'] . (DEBUG?$e->getMessage():"");
+                return 0;
+            }
+        } else {
+            try {
+                $stmt = $this->dbh->prepare($qry);
+                $stmt->execute();
+            } catch(PDOException $e) {
+                $_SESSION['FERROR'] = ERR['SQLERR'] . (DEBUG?$e->getMessage():"");
                 return 0;
             }
         }

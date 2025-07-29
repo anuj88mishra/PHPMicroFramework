@@ -42,7 +42,7 @@ class HtmlClass
         $this->pageLinkClass = "pagination-link";
         $this->pageEllipsesClass = "pagination-ellipses";
         $this->pageCurrentClass = "pagination-link is-current";
-        $this->notifyClass = "";
+        $this->notifyClass = "notification";
         $this->notifyMessage = "";
         $this->fieldGroupClass = "field";
         $this->fieldControlClass = "control";

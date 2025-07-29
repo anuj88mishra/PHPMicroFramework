@@ -18,6 +18,12 @@ final class Util {
     public static function C_EMPTY($str) {
         return empty($str);
     }
+    public static function C_REDIRECT($url) {
+        if (filter_var($url, FILTER_VALIDATE_URL))
+            header("location:".$url);
+        else
+            return false;
+    }
     public static function C_ARRAY_INDEX($arr, $idx = 0) {
         if (is_array($arr) && empty($idx)) {
             return $arr[array_key_first($arr)];
@@ -26,5 +32,6 @@ final class Util {
         } else {
             return $arr;
         }
+        return false;
     }
 }

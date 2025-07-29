@@ -1,5 +1,5 @@
 <?php
-include __DIR__."/../template/header.php";
+include __DIR__."/../template/headerAuth.php";
 include BASE_DIR."class/Gen.php";
 $gen = new Gen();
 $gen->sql = "INSERT INTO adm.user_1 (usr_cd, usr_name) VALUES (?, ?)";
