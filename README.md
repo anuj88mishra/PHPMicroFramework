@@ -7,7 +7,7 @@ Todo List
 - [x] View Page
 - [x] Form builder through low code
 - [x] Add/ Update Page
-- [ ] Login Page
+- [x] Login Page
 - [ ] Registration Page
 - [ ] Roles
 - [ ] Graphical Form builder
