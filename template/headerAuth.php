@@ -39,7 +39,7 @@ if (DEBUG) {
     if (empty($_SESSION['USER'])) {
         $_SESSION['NOTIFYMESSAGE'] = "Please login to access this resource";
         $_SESSION['NOTIFYCLASS'] = "notification is-danger is-light";
-        Util::C_REDIRECT(BASE_URL."login/login.php");
+        header("location:".BASE_URL."login/login.php");
     }
     if (isset($_SESSION['NOTIFYMESSAGE'])) {
         $htmlClass = new HtmlClass();
