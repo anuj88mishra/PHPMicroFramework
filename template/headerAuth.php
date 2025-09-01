@@ -7,7 +7,7 @@ date_default_timezone_set("Asia/Kolkata");
 // header("Expires: -1");
 if (SECURE) {
     header("X-XSS-Protection: 1; mode=block");
-    header('Access-Control-Allow-Headers: *');
+    // header('Access-Control-Allow-Headers: *');
     header('X-Content-Type-Options: nosniff');
     header("Access-Control-Allow-Methods: POST, GET");
     header("Access-Control-Allow-Headers: Content-Type, Authorization");  // Allowed headers

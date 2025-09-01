@@ -3,6 +3,7 @@ include __DIR__."/../template/header.php";
 include BASE_DIR."class/Gen.php";
 /* Logout */
 if (isset($_GET['logout'])) {
+    session_unset();
     session_destroy();
     Util::C_REDIRECT(BASE_URL."login/login.php");
 }
