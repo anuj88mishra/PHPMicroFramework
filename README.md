@@ -10,7 +10,7 @@ Todo List
 - [x] Login Page
 - [ ] Registration Page
 - [ ] Roles
-- [ ] Graphical Form builder
+- [x] Graphical Form builder
 - [ ] MySQL Support
 Wishlist
 - [ ] Item manipulation in columns
