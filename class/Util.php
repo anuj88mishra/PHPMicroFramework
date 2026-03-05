@@ -8,21 +8,25 @@ final class Util {
         return ( is_numeric($number) && is_numeric($significance) ) ? (floor($number/$significance)*$significance) : false;
     }
     public static function C_CLEAN_SELECT($sql) {
-        if (preg_match("/;|update|insert|drop|delete|truncate/", strtolower($sql))) { return false; }
+        $sql = strtolower($sql);
+        if (preg_match("/;|drop|delete|truncate|\b(insert|update)\b/", $sql)) { return false; }
         return true;
     }
     public static function C_CLEAN_UPDATE($sql) {
-        if (preg_match("/;|drop|delete|truncate/", strtolower($sql))) { return false; }
+        $sql = strtolower($sql);
+        if (preg_match("/;|\b(drop|truncate)\b/", $sql)) { return false; }
         return true;
     }
     public static function C_EMPTY($str) {
         return empty($str);
     }
     public static function C_REDIRECT($url) {
-        if (filter_var($url, FILTER_VALIDATE_URL))
+        if (strpos($url, '://') === false || filter_var($url, FILTER_VALIDATE_URL)) {
             header("location:".$url);
-        else
+            exit();
+        } else {
             return false;
+        }
     }
     public static function C_ARRAY_INDEX($arr, $idx = 0) {
         if (is_array($arr) && empty($idx)) {

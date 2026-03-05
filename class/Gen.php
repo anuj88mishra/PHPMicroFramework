@@ -1,5 +1,5 @@
 <?php
-include BASE_DIR."class/Conn.php";
+require_once BASE_DIR."class/Conn.php";
 class Gen extends HtmlClass{
     protected $conn;
     public $sql;
@@ -101,10 +101,18 @@ class Gen extends HtmlClass{
             foreach ($this->fields as $col => $caption) {
                 if (preg_match("/c_/", strtolower($col))) continue;
                 $srch2 .= "~".$srch;
-                if ($i++ == 0 )
-                $sqlWhere .= " AND ( $col::varchar ILIKE '%' || ? || '%'";
-                else
-                $sqlWhere .= " OR $col::varchar ILIKE '%' || ? || '%'";
+                if ($i++ == 0 ) {
+                    $sqlWhere .= " AND ( ";
+                } else {
+                    $sqlWhere .= " OR ";
+                }
+                
+                if (defined('DB_DRIVER') && DB_DRIVER == 'mysql') {
+                    $sqlWhere .= "CAST($col AS CHAR) LIKE CONCAT('%', ?, '%')";
+                } else {
+                    // Default to PostgreSQL syntax as per original framework design
+                    $sqlWhere .= "$col::varchar ILIKE '%' || ? || '%'";
+                }
             }
             $sqlWhere .= ")";
             if (empty($this->param)) $srch2 = ltrim($srch2, '~');
@@ -232,7 +240,7 @@ class Gen extends HtmlClass{
                         $this->html .= "$attKey= '$attValue' ";
                     }
                 }
-                $this->html .= "/>";
+                $this->html .= "></textarea>";
             } elseif ($value['type'] == "select" ) {
                 $this->html .= "<select class='$this->fieldInputClass $value[control_class]' id='$key' name='$key' ";
                 if (!empty($value['attributes'])) {
@@ -247,7 +255,7 @@ class Gen extends HtmlClass{
                     if (is_array($sVal)) { 
                         $this->html .= "selected='selected' >".$sVal[0]; 
                     } else $this->html .= ">".$sVal; 
-                    "</option>";
+                    $this->html .= "</option>";
                 }
                 $this->html .= "</select>";
             }
