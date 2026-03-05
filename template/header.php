@@ -1,7 +1,7 @@
 <?php 
 session_start();
-include __DIR__."/../config.php";
-include BASE_DIR."class/HtmlClass.php";
+require_once __DIR__."/../config.php";
+require_once BASE_DIR."class/HtmlClass.php";
 date_default_timezone_set("Asia/Kolkata");
 // header("Cache-Control: no-cache, must-revalidate");
 // header("Expires: -1");
@@ -33,12 +33,12 @@ if (DEBUG) {
     <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
 </head>
 <body>
-    <!-- NAV -->
-<div class="container">
-    <?php 
+    <?php include __DIR__."/navbar.php"; ?>
+<div class="container mt-5">
+   <?php 
     if (isset($_SESSION['NOTIFYMESSAGE'])) {
         $htmlClass = new HtmlClass();
-        $htmlClass->notifyClass = $_SESSION['NOTIFYCLASS'];
+        $htmlClass->notifyClass = $_SESSION['NOTIFYCLASS'] ?? 'notification is-info';
         $htmlClass->notifyMessage = $_SESSION['NOTIFYMESSAGE']; 
         echo "<div class='$htmlClass->notifyClass'><button class='delete'></button>$htmlClass->notifyMessage</div>"; 
         unset($_SESSION['NOTIFYCLASS']);

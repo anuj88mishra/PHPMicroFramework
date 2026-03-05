@@ -1,12 +1,13 @@
 <?php
+const DB_DRIVER = 'mysql';
 const DB_HOST = 'localhost';
-const DB_NAME = 'admdb';
-const DB_USER = 'postgres';
-const DB_PASS = 'pgsql';
-const BASE_URL = 'http://localhost/PHPMicroFramework/';
-const BASE_DIR = 'E:/xampp/htdocs/PHPMicroFramework/'; 
-const SITE_TITLE = "MySite";
-const SITE_DESC = "Glorious site description";
+const DB_NAME = 'test_crud';
+const DB_USER = 'root';
+const DB_PASS = '';
+const BASE_URL = 'http://localhost:8000/';
+const BASE_DIR = __DIR__ . '/';
+const SITE_TITLE = "PHPMicroFramework - Test";
+const SITE_DESC = "Low-code Framework with CRUD Builder and Menu Editor";
 const DEBUG = true;
 const SECURE = true;
 

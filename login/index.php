@@ -5,7 +5,7 @@ include BASE_DIR."class/Gen.php";
 if (isset($_GET['logout'])) {
     session_unset();
     session_destroy();
-    Util::C_REDIRECT(BASE_URL."login/login.php");
+    Util::C_REDIRECT(BASE_URL."login/index.php");
 }
 /* End Logout */
 final class Login extends Gen {
