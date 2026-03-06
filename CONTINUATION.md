@@ -77,8 +77,13 @@ While the core functionality is complete, the following areas can be explored fo
 * **Execution**: The file name should utilise the module_id_{last_insert_id}_filename.ext format to prevent accidental overwrites. The upload folder should be included in the gitignore file and the application should autogenerate and utilise YYYY/MM folders under uploads to keep uploaded files organised.
 
 ### 12. Documentation
-*   **Goal**: Create a comprehensive documentation for the framework.
-*   **Execution**: Create a docs folder consisting of interlinked Markdown files for guiding developers to use the module.
+* **Goal**: Create a comprehensive documentation for the framework.
+* **Execution**: Create a docs folder consisting of interlinked Markdown files for guiding developers to use the module.
+
+### 13. Custom Values for existing columns and option for additional custom columns
+* **Goal**: Allow users to specify custom values for columns in list and view pages.
+* **Execution**: Add functionality to the CRUD Builder to allow users to specify custom values for columns e.g. <a href="thatpage.php?id={id}">{name}</a>.
+
 ---
 
 ## Known Bugs
