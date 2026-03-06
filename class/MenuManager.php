@@ -15,7 +15,12 @@ class MenuManager {
      * Get all active menu items
      */
     public function getMenus() {
-        return $this->conn->SQLCursor("SELECT * FROM menus WHERE is_active = 1 ORDER BY sort_order, label");
+        if (empty($_SESSION['ROLE_IDS'])) return [];
+        $roleIds = $_SESSION['ROLE_IDS'];
+        $placeholders = implode(',', array_fill(0, count($roleIds), '?'));
+        $param = implode('~', $roleIds);
+        
+        return $this->conn->SQLCursor("SELECT DISTINCT m.* FROM menus m JOIN role_menus rm ON m.id = rm.menu_id WHERE m.is_active = 1 AND rm.role_id IN ($placeholders) ORDER BY m.sort_order, m.label", $param);
     }
 
     /**
@@ -25,9 +30,24 @@ class MenuManager {
         $items = $this->getMenus();
         if (!$items) return "";
 
+        // Fetch CRUD modules that have fast page enabled to do the swap
+        $fastModules = $this->conn->SQLCursor("SELECT id FROM crud_modules WHERE use_fast_page = 1");
+        $fastIds = [];
+        if (is_array($fastModules)) {
+            foreach($fastModules as $fm) $fastIds[] = $fm['id'];
+        }
+
         // Build Tree
         $tree = [];
         foreach ($items as $item) {
+            // Automatic Fast Page Switching
+            if (preg_match('/dynamic_view\.php\?id=(\d+)/', $item['link'], $matches)) {
+                $mid = $matches[1];
+                if (in_array($mid, $fastIds)) {
+                    $item['link'] = str_replace("dynamic_view.php?id=$mid", "fast_mod_$mid.php", $item['link']);
+                }
+            }
+
             if ($item['parent_id'] == null) {
                 $tree[$item['id']] = $item;
                 $tree[$item['id']]['children'] = [];

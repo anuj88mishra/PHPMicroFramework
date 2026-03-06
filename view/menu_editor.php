@@ -13,6 +13,14 @@ if (isset($_POST['label'])) {
         $_SESSION['NOTIFYMESSAGE'] = "Menu Item Updated";
     } else {
         $conn->ExecSQL("INSERT INTO menus (label, link, parent_id, sort_order) VALUES (?, ?, ?, ?)", $_POST['label']."~".$_POST['link']."~".$parent."~".$_POST['sort_order']);
+        $newMenuID = $conn->getLastInsertId();
+        
+        // Auto-assign Administrator role to new menu
+        $adminRole = $conn->SQLFetch("SELECT id FROM roles WHERE role_name = 'Administrator'");
+        if ($adminRole) {
+            $conn->ExecSQL("INSERT INTO role_menus (role_id, menu_id) VALUES (?, ?)", "$adminRole~$newMenuID");
+        }
+        
         $_SESSION['NOTIFYMESSAGE'] = "Menu Item Added";
     }
     $_SESSION['NOTIFYCLASS'] = "notification is-success";

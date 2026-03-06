@@ -16,13 +16,29 @@ final class Login extends Gen {
         parent::__destruct();
     }
     public function preTran() {
-        $this->ret = $this->conn->SQLFetchRow("SELECT usr_name, user_alias as email FROM adm.user_1 WHERE usr_cd = UPPER(?) AND usr_passwd = md5(?) AND COALESCE(rec_ind,'A') <> 'X'", $_POST['usr_cd']."~".$_POST['usr_passwd']);
+        $this->ret = $this->conn->SQLFetchRow("SELECT id, usr_name, user_alias as email FROM users WHERE usr_cd = ? AND usr_passwd = md5(?) AND COALESCE(rec_ind,'A') <> 'X'", $_POST['usr_cd']."~".$_POST['usr_passwd']);
         if ($this->ret) {
             $_SESSION['NOTIFYMESSAGE'] = "Login Successful";
             $_SESSION['NOTIFYCLASS'] = "notification is-success is-light";
             $_SESSION['USER'] = $_POST['usr_cd'];
-            $_SESSION['EMAIL'] = $_POST['email'];
-            Util::C_REDIRECT(BASE_URL."view/list.php");
+            $_SESSION['USER_ID'] = $this->ret['id'];
+            $_SESSION['USER_NAME'] = $this->ret['usr_name'];
+            $_SESSION['EMAIL'] = $this->ret['email'];
+            
+            // Fetch Roles
+            $roles = $this->conn->SQLCursor("SELECT r.id, r.role_name FROM roles r JOIN user_roles ur ON r.id = ur.role_id WHERE ur.user_id = ?", $this->ret['id']);
+            $roleNames = [];
+            $roleIds = [];
+            if (is_array($roles)) {
+                foreach($roles as $r) {
+                    $roleNames[] = $r['role_name'];
+                    $roleIds[] = $r['id'];
+                }
+            }
+            $_SESSION['ROLES'] = $roleNames;
+            $_SESSION['ROLE_IDS'] = $roleIds;
+
+            Util::C_REDIRECT(BASE_URL."index.php");
         } else {
             $this->notifyMessage = "Username/ Password Incorrect";
             $this->notifyClass = "notification is-danger is-light";

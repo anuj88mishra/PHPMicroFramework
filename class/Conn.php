@@ -129,6 +129,9 @@ final class Conn {
     $stmt->closeCursor();
         return 1;
     }
+    public function getLastInsertId() {
+        return $this->dbh->lastInsertId();
+    }
 
     /**
      * Get columns for a table (MySQL/PostgreSQL)

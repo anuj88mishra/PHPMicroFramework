@@ -1,52 +1,88 @@
 # PHPMicroFramework - Development Continuation Document
 
-This document serves as a checkpoint to summarize the progress made so far and outline the specific features to be implemented in the upcoming development sessions.
+This document summarizes the platform's evolution into a high-performance, enterprise-ready low-code engine.
 
-## 🏆 What We Have Accomplished
+## 🏆 Current Platform State
 
-We have significantly upgraded the `PHPMicroFramework` from a basic template into a robust, low-code rapid application development platform.
+The `PHPMicroFramework` has reached a milestone where it can handle sophisticated database management with minimal manual coding.
 
-### 1. Framework Enhancements & Bug Fixes
-* **Database Agnosticism**: Parameterized the PDO driver (`DB_DRIVER`) in `Conn.php` and adapted the auto-search logic in `Gen.php` to dynamically switch between PostgreSQL (`::varchar ILIKE`) and MySQL (`CAST(... AS CHAR) LIKE`).
-* **Security & Utility Refinement**: Enhanced SQL validation regex (`\b`) in `Util.php` to avoid false positives (e.g., allowing `LAST_INSERT_ID()`). Addressed redirect vulnerabilities by enforcing `exit()` after headers.
-* **Component Loading**: Replaced fragile `include` statements with `require_once` across all core files to unequivocally resolve fatal "Cannot declare class" errors during complex module loading.
-* **Frontend Interactivity**: Added standard Bulma JS triggers (Burger menu toggle, Notification dismissal) to `js/app.js`.
+### 1. Framework Core & Security
+*   **RBAC (Role-Based Access Control)**: Implemented a robust security layer including `roles`, `user_roles`, `role_modules`, and `role_menus`.
+*   **Enforcement**: 
+    *   **Login**: Now tracks user ID, Name, and assigned Roles in the session.
+    *   **Authorization**: Every access to a dynamic or compiled CRUD module is now verified against the user's roles.
+    *   **Admin Protection**: Core utility pages (Builder, Compiler, Menu Editor) are strictly restricted to the "Administrator" role.
+*   **Responsive UI**: Updated the navbar to display the logged-in user's full name and their active roles.
 
-### 2. Graphical Menu System
-* **Menu Engine**: Created a recursive `MenuManager.php` to render multi-level navigation trees.
-* **Menu Editor UI (`view/menu_editor.php`)**: Built a graphical interface for administrators to add, edit, link, and reorganize parent/child navigation links without touching HTML.
+### 2. Intelligent Data Management
+*   **Default Values**: Supported `{USER}`, `{DATE}`, and `{DATETIME}` placeholders for automated auditing. Added `{UPDATE_...}` variants to ensure data integrity during edits.
+*   **Select/Dropdown Types**: Fully functional `select` fields supporting both manual CSV lists and dynamic SQL lookups (`SELECT id, name FROM table`).
+*   **File Uploads**: Native support for binary uploads. The system automatically handles form encoding, directory creation, unique file naming, and path storage.
 
-### 3. Rapid CRUD Builder Engine
-* **Setup Script (`init_db.php`)**: An automated deployment script that constructs the necessary meta-tables (`users`, `menus`, `crud_modules`) and creates standard default admin credentials.
-* **Schema Introspection**: Programmed `Conn.php` to analyze database tables and columns natively via `SHOW COLUMNS` (MySQL) or `information_schema` (PostgreSQL).
-* **Builder Wizard (`view/crud_builder.php`)**: A graphical setup tool letting admins point to any database table and declare field mappings, UI labels, HTML input types, summary table visibility, Add/Edit/Delete permissions, and custom row actions (Buttons executing JS or routing to PHP scripts).
-* **Dynamic Content Renderer (`view/dynamic_view.php`)**: An intelligent view script that reads a saved JSON configuration and automatically assembles fully functioning List grids, Add forms, and securely parameterized Edit forms on-the-fly.
+### 3. Performance & Compilation
+*   **The Compiler Class**: A dedicated engine that transforms dynamic JSON-driven modules into high-speed, static PHP files.
+*   **Hybrid Delivery**: A toggle system allows administrators to alternate between "Dynamic Mode" (for live configuration changes) and "Fast Mode" (static cached execution) without changing code.
+*   **Smart Routing**: The `MenuManager` and `CRUD List` now automatically route users to compiled files if "Fast Mode" is enabled.
+
+### 4. CRUD Builder Refinements
+*   **Module Editing**: You can now "Edit Definition" for any existing module. The wizard pre-populates all field settings, permissions, and custom actions.
+*   **Custom Action Placeholders**: Extended placeholder replacement allows any column in the row to be referenced in a button trigger (e.g., `process.php?ref={order_no}`).
 
 ---
 
-## 🚀 Upcoming Features (Productivity Roadmap)
+## 🚀 Future Roadmap & Potential Enhancements
 
-The following 4 features have been requested and will be the primary focus of the next session:
+While the core functionality is complete, the following areas can be explored for further framework growth:
 
-### 1. Default Values Configuration
-* **Goal**: Provide the option to specify default values during module definition.
-* **Execution**: Fields like `created_at`, `updated_at`, `created_by`, or `last_edited_by` will automatically hook into system constants or Session data (`$_SESSION['USER']`) during the Add/Edit processes inside the dynamic forms.
+### 1. Unified Security Management UI
+*   **Goal**: Create a graphical dashboard to manage roles and assignments.
+*   **Execution**: Use the existing CRUD Builder to generate interfaces for the RBAC tables (`roles`, `user_roles`, etc.), allowing non-developers to manage system access.
 
-### 2. Select Type Value Specification
-* **Goal**: Allow dynamic drop-downs in auto-generated forms.
-* **Execution**: Enhance the CRUD Builder to capture mapping data for `select` types. This could accept comma-separated manual values (e.g., `Active, Inactive, Pending`) or foreign key lookups (e.g., `SELECT id, name FROM categories`).
+### 2. Multi-Table Joins in Builder
+*   **Goal**: Allow the CRUD builder to join related tables in the list view.
+*   **Execution**: Enhance the "Step 2" configuration to allow specifying a "Display Column" from a linked table (e.g., showing `category_name` instead of `category_id`).
 
-### 3. File Upload Facilitation
-* **Goal**: Support attachments and image uploads natively.
-* **Execution**: 
-    1. Introduce a "File/Upload" input type in the CRUD Builder.
-    2. Upgrade `Gen::form()` to support `enctype="multipart/form-data"`.
-    3. Program `dynamic_view.php` to handle secure `$_FILES` parsing, moving the file to an upload directory, and recording the file path string in the target table row.
+### 3. Client-Side Validation
+*   **Goal**: Add real-time form validation.
+*   **Execution**: Extend the field configuration to include regex patterns or common validation types (email, telephone, numeric ranges) that generate HTML5 validation attributes.
 
-### 4. Code Generation (Fast Cached Pages)
-* **Goal**: Eliminate runtime database configuration queries for production environments.
-* **Execution**: Introduce a "Compile Module" feature. Once a CRUD page acts exactly as desired dynamically, the System Admin can hit a button to generate a physical, dedicated PHP file (e.g., `view/compiled_moduleName.php`). This script will have all arrays and queries completely hardcoded, bypassing JSON decoding and framework overhead for maximum performance.
+### 4. Theming Engine
+*   **Goal**: Allow users to switch between different Bulma-based color schemes.
+*   **Execution**: Use a configuration variable to switch CSS imports and update the UI components accordingly.
+   
+### 5. Sorting & Searching in modules
+*   **Goal**: Allow users to sort and search in modules.
+*   **Execution**: Add sorting and searching functionality to the CRUD modules.
 
-### 5. Extended Custom Action Parameters
-* **Goal**: Allow custom actions to reference any column data from the row, not just the primary key (`id`).
-* **Execution**: Upgrade the string replacement logic in `dynamic_view.php`. Instead of just replacing `{id}`, the script will loop through all `$selectFields` and replace `{column_name}` placeholders in the custom action trigger with the actual `$row['column_name']` values (e.g., `print.php?id={id}&status={status}`).
+### 6. Even faster pages
+* **Goal**: Make the pages even faster.
+* **Execution**: Update the compiler to generate PHP code bypassing the arrays and Gen class being used (a temporary file may be used while compiling), and directly generate the HTML code. PHP will be used only for RBAC, fetching and updating data by utilizing the Conn class.
+   
+### 7. API
+* **Goal**: Create an API for the framework.
+* **Subgoal**: To use the framework as a headless CMS by having an init_cms.php script.
+* **Execution**: Create an API folder consisting of API endpoints for the modules.
+
+### 8. Reports
+* **Goal**: Option to create sortable/searchable reports from SQL queries.
+* **Execution**: Create a reports sub-folder under view consisting any custom reports generated using SQL queries this would also include and custom actions per record as provided in the module.
+
+### 9. Modules menu in the menu bar
+* **Goal**: Add a menu in the menu bar to display all the modules available to the user. 
+
+### 10. Any and all errors should use the ERR array constant.
+
+### 11. A dedicated public/upload folder 
+* **Goal**: Organised Uploads
+* **Execution**: The file name should utilise the module_id_{last_insert_id}_filename.ext format to prevent accidental overwrites. The upload folder should be included in the gitignore file and the application should autogenerate and utilise YYYY/MM folders under uploads to keep uploaded files organised.
+
+### 12. Documentation
+*   **Goal**: Create a comprehensive documentation for the framework.
+*   **Execution**: Create a docs folder consisting of interlinked Markdown files for guiding developers to use the module.
+---
+
+## Known Bugs
+
+1. Blank type for control! - When adding/ editing a record in module 3 the above message is displayed.
+2. no values in dropdown for selecting Parent Item in Menu Editor.
+

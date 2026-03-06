@@ -13,6 +13,7 @@ class Gen extends HtmlClass{
     public $withSrch;
 
     public $formTitle;
+    public $formEnctype;
     public $ret;
     
     public function __construct() {
@@ -28,6 +29,7 @@ class Gen extends HtmlClass{
         $this->offset = 0;
         $this->withSrch = 1;
         $this->formTitle = "Add/ Edit";
+        $this->formEnctype = "";
         $this->ret = null;
     }
     public function __destruct() {
@@ -43,6 +45,7 @@ class Gen extends HtmlClass{
         $this->offset = null;
         $this->withSrch = null;
         $this->formTitle = null;
+        $this->formEnctype = null;
         $this->ret = null;
     }
     public function preTran() { 
@@ -213,11 +216,11 @@ class Gen extends HtmlClass{
         $this->html .= "<div class='$this->cardHeaderTitleClass'>$this->formTitle</div>";
         $this->html .= "</div>"; /*End Card Header */
         $this->html .= "<div class='$this->cardContentClass'>";
-        $this->html .= "<form class='".$this->tblClass."' id='".$this->tblId."' method='POST' action='".(isset($this->fields['actions']['submit']['link'])?$this->fields['actions']['submit']['link']:"#")."'>";
+        $this->html .= "<form class='".$this->tblClass."' id='".$this->tblId."' method='POST' action='".(isset($this->fields['actions']['submit']['link'])?$this->fields['actions']['submit']['link']:"#")."' ".(empty($this->formEnctype)?"":"enctype='".$this->formEnctype."'").">";
         foreach ($this->fields as $key => $value) {
             if ($key == "actions") continue;
             if (empty($value['type'])) { $this->html .= "<div class='$this->fieldGroupClass'>Blank type for control!</div>"; continue; }
-            if (!in_array($value['type'],["text", "email", "date", "datetime-local", "password", "month", "week", "number", "textarea", "select"])) { 
+            if (!in_array($value['type'],["text", "email", "date", "datetime-local", "password", "month", "week", "number", "textarea", "select", "file"])) { 
                 $this->html .= "<div class='$this->fieldGroupClass'>Type of control $value[type] not yet implemented!</div>"; 
                 continue; 
             }
@@ -225,7 +228,7 @@ class Gen extends HtmlClass{
             if (empty($value['label_class'])) $value['label_class'] = "";
             if (empty($value['control_class'])) $value['control_class'] = "";
             $this->html .= "<div class='$this->fieldGroupClass'><label class='label $value[label_class]' for='$key'>".(isset($value['label'])?$value['label']:$key).(isset($value['req'])?'*':'')."</label><div class='$this->fieldControlClass'>";
-            if (in_array($value['type'],["text", "email", "date", "datetime-local", "password", "month", "week", "number"])) {
+            if (in_array($value['type'],["text", "email", "date", "datetime-local", "password", "month", "week", "number", "file"])) {
                 $this->html .= "<input class='$this->fieldInputClass $value[control_class]' type='".$value['type']."' id='$key' name='$key' ";
                 if (!empty($value['attributes'])) {
                     foreach ($value['attributes'] as $attKey => $attValue) {
