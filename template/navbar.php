@@ -31,7 +31,10 @@ $isLoggedIn = !empty($_SESSION['USER']);
         <div class="navbar-item">
           <div class="buttons">
             <?php if ($isLoggedIn): ?>
-              <span class="tag is-info is-light mr-3">User: <?= $_SESSION['USER'] ?></span>
+              <div class="mr-3 has-text-white is-size-7 has-text-right">
+                <div class="has-text-weight-bold"><?= $_SESSION['USER_NAME'] ?? $_SESSION['USER'] ?></div>
+                <div class="is-italic"><?= !empty($_SESSION['ROLES']) ? implode(', ', $_SESSION['ROLES']) : 'No Role' ?></div>
+              </div>
               <a class="button is-light" href="<?=BASE_URL?>login/index.php?logout">
                 Logout
               </a>

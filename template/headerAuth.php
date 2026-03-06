@@ -42,6 +42,18 @@ if (DEBUG) {
         header("location:".BASE_URL."login/index.php");
         exit();
     }
+    
+    // System Admin Protection: Restrict core builder tools to 'Administrator' role
+    $adminPages = ['crud_builder.php', 'crud_list.php', 'menu_editor.php', 'compiler.php'];
+    $currentPage = basename($_SERVER['PHP_SELF']);
+    if (in_array($currentPage, $adminPages)) {
+        if (!isset($_SESSION['ROLES']) || !in_array('Administrator', $_SESSION['ROLES'])) {
+            $_SESSION['NOTIFYMESSAGE'] = "Access Denied: Administrator role required for this tool.";
+            $_SESSION['NOTIFYCLASS'] = "notification is-danger";
+            header("location:".BASE_URL."index.php");
+            exit();
+        }
+    }
     if (isset($_SESSION['NOTIFYMESSAGE'])) {
         $htmlClass = new HtmlClass();
         $htmlClass->notifyClass = $_SESSION['NOTIFYCLASS'] ?? 'notification is-info';

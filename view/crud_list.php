@@ -13,7 +13,18 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-$data = $conn->SQLCursor("SELECT id, module_name, table_name, created_at FROM crud_modules ORDER BY created_at DESC");
+// Handle toggle fast page
+if (isset($_GET['toggle_fast'])) {
+    $current = $conn->SQLFetch("SELECT use_fast_page FROM crud_modules WHERE id = ?", $_GET['toggle_fast']);
+    $newVal = $current ? 0 : 1;
+    $conn->ExecSQL("UPDATE crud_modules SET use_fast_page = ? WHERE id = ?", $newVal . "~" . $_GET['toggle_fast']);
+    $_SESSION['NOTIFYMESSAGE'] = "Fast Page " . ($newVal ? "Enabled" : "Disabled");
+    $_SESSION['NOTIFYCLASS'] = "notification is-info";
+    header("Location: crud_list.php");
+    exit();
+}
+
+$data = $conn->SQLCursor("SELECT id, module_name, table_name, created_at, is_compiled, use_fast_page FROM crud_modules ORDER BY created_at DESC");
 
 ?>
 
@@ -34,6 +45,16 @@ $data = $conn->SQLCursor("SELECT id, module_name, table_name, created_at FROM cr
                         <hr>
                         <div class="buttons">
                             <a href="dynamic_view.php?id=<?= $row['id'] ?>" class="button is-small is-link">Access View</a>
+                            <a href="crud_builder.php?id=<?= $row['id'] ?>" class="button is-small is-warning is-light">Edit Definition</a>
+                            <a href="compiler.php?id=<?= $row['id'] ?>" class="button is-small is-info is-light">Compile Fast Page</a>
+                            <?php if ($row['is_compiled']): ?>
+                                <a href="crud_list.php?toggle_fast=<?= $row['id'] ?>" class="button is-small <?= $row['use_fast_page'] ? 'is-success' : 'is-light' ?>">
+                                    <?= $row['use_fast_page'] ? 'Fast Enabled' : 'Use Dynamic' ?>
+                                </a>
+                                <?php if ($row['use_fast_page']): ?>
+                                    <a href="fast_mod_<?= $row['id'] ?>.php" class="button is-small is-black is-outlined">Fast File</a>
+                                <?php endif; ?>
+                            <?php endif; ?>
                             <a href="crud_list.php?delete=<?= $row['id'] ?>" class="button is-small is-danger is-light" onclick="return confirm('Ensure you want to delete this module?')">Delete</a>
                         </div>
                     </div>
